@@ -16,3 +16,4 @@ The Proto file `racing.proto` defines the messages and services used in the Raci
 ### RPC
 
 - `ListRaces`: Retrieves a collection of all races based on the provided filter criteria.
+- `FetchRaceByID` Retrieves a single race based on the id passed.
