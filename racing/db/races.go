@@ -89,6 +89,19 @@ func (r *racesRepo) applyFilter(query string, filter *racing.ListRacesRequestFil
 		query += " WHERE " + strings.Join(clauses, " AND ")
 	}
 
+	if filter.OrderBy != nil {
+		sortOrder := strings.ToLower(*filter.OrderBy)
+
+		switch sortOrder {
+		case "asc":
+			query += "ORDER BY advertised_start_time ASC"
+		case "desc":
+			query += "ORDER BY advertised_start_time DESC"
+		default:
+			query += "ORDER BY advertised_start_time"
+		}
+	}
+
 	return query, args
 }
 
