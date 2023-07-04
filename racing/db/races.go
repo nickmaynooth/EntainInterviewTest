@@ -122,6 +122,13 @@ func (r *racesRepo) applyFilter(query string, filter *racing.ListRacesRequestFil
 		query += " WHERE " + strings.Join(clauses, " AND ")
 	}
 
+	query = applySorting(query, filter)
+
+	return query, args
+}
+
+func applySorting(query string, filter *racing.ListRacesRequestFilter) string {
+
 	if filter.OrderBy != nil {
 		sortOrder := strings.ToLower(*filter.OrderBy)
 
@@ -135,7 +142,7 @@ func (r *racesRepo) applyFilter(query string, filter *racing.ListRacesRequestFil
 		}
 	}
 
-	return query, args
+	return query
 }
 
 func (m *racesRepo) scanRaces(
