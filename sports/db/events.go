@@ -117,6 +117,13 @@ func (r *eventsRepo) applyFilter(query string, filter *sports.ListEventRequestFi
 		query += " WHERE " + strings.Join(clauses, " AND ")
 	}
 
+	query = applySorting(query, filter)
+
+	return query, args
+}
+
+func applySorting(query string, filter *sports.ListEventRequestFilter) string {
+
 	if filter.OrderBy != nil {
 		sortOrder := strings.ToLower(*filter.OrderBy)
 
@@ -130,7 +137,7 @@ func (r *eventsRepo) applyFilter(query string, filter *sports.ListEventRequestFi
 		}
 	}
 
-	return query, args
+	return query
 }
 
 func (m *eventsRepo) scanEvents(
