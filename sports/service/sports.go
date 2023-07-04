@@ -6,21 +6,21 @@ import (
 	"golang.org/x/net/context"
 )
 
-type Racing interface {
+type Sports interface {
 	// ListEvents will return a collection of events.
 	ListEvents(ctx context.Context, in *sports.ListEventsRequest) (*sports.ListEventsResponse, error)
 
-	// FetchEventById will return a race with the matching Id.
+	// FetchEventById will return a event with the matching Id.
 	FetchEventById(ctx context.Context, in *sports.EventRequestById) (*sports.Event, error)
 }
 
-// sportsService implements the Racing interface.
+// sportsService implements the Sports interface.
 type sportsService struct {
 	eventsRepo db.EventsRepo
 }
 
-// NewRacingService instantiates and returns a new sportsService.
-func NewRacingService(eventsRepo db.EventsRepo) Racing {
+// NewSportsService instantiates and returns a new sportsService.
+func NewSportsService(eventsRepo db.EventsRepo) Sports {
 	return &sportsService{eventsRepo}
 }
 
@@ -35,10 +35,10 @@ func (s *sportsService) ListEvents(ctx context.Context, in *sports.ListEventsReq
 
 func (s *sportsService) FetchEventById(ctx context.Context, in *sports.EventRequestById) (*sports.Event, error) {
 	id := in.Id
-	race, err := s.eventsRepo.FetchById(&id)
+	event, err := s.eventsRepo.FetchById(&id)
 	if err != nil {
 		return nil, err
 	}
 
-	return race, nil
+	return event, nil
 }

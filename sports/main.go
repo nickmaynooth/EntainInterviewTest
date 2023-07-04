@@ -6,9 +6,9 @@ import (
 	"log"
 	"net"
 
-	"github.com/nickmaynooth/entain/sports/db"
-	"github.com/nickmaynooth/entain/sports/proto/sports"
-	"github.com/nickmaynooth/entain/sports/service"
+	"git.neds.sh/matty/entain/sports/db"
+	"git.neds.sh/matty/entain/sports/proto/sports"
+	"git.neds.sh/matty/entain/sports/service"
 	"google.golang.org/grpc"
 )
 
@@ -30,13 +30,13 @@ func run() error {
 		return err
 	}
 
-	sportsDB, err := sql.Open("sqlite3", "./db/sports.db")
+	eventsDB, err := sql.Open("sqlite3", "./db/sports.db")
 	if err != nil {
 		return err
 	}
 
-	racesRepo := db.NewRacesRepo(sportsDB)
-	if err := racesRepo.Init(); err != nil {
+	eventsRepo := db.NewEventsRepo(eventsDB)
+	if err := eventsRepo.Init(); err != nil {
 		return err
 	}
 
@@ -45,7 +45,7 @@ func run() error {
 	sports.RegisterSportsServer(
 		grpcServer,
 		service.NewSportsService(
-			sportsRepo,
+			eventsRepo,
 		),
 	)
 

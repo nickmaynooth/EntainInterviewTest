@@ -18,7 +18,7 @@ type EventsRepo interface {
 	Init() error
 
 	// List will return a list of events.
-	List(filter *sports.ListeventRequestFilter) ([]*sports.Event, error)
+	List(filter *sports.ListEventRequestFilter) ([]*sports.Event, error)
 
 	// FetchById will return events by id
 	FetchById(id *int64) (*sports.Event, error)
@@ -53,7 +53,7 @@ func (r *eventsRepo) FetchById(id *int64) (*sports.Event, error) {
 		args  []interface{}
 	)
 
-	query = getEventQueries()[eventById]
+	query = getEventQueries()[eventsList]
 
 	if id != nil {
 		args = append(args, id)
@@ -76,7 +76,7 @@ func (r *eventsRepo) FetchById(id *int64) (*sports.Event, error) {
 
 }
 
-func (r *eventsRepo) List(filter *sports.ListEventsRequestFilter) ([]*sports.Event, error) {
+func (r *eventsRepo) List(filter *sports.ListEventRequestFilter) ([]*sports.Event, error) {
 	var (
 		err   error
 		query string
@@ -95,7 +95,7 @@ func (r *eventsRepo) List(filter *sports.ListEventsRequestFilter) ([]*sports.Eve
 	return r.scanEvents(rows)
 }
 
-func (r *eventsRepo) applyFilter(query string, filter *sports.ListEventsRequestFilter) (string, []interface{}) {
+func (r *eventsRepo) applyFilter(query string, filter *sports.ListEventRequestFilter) (string, []interface{}) {
 	var (
 		clauses []string
 		args    []interface{}
@@ -105,17 +105,12 @@ func (r *eventsRepo) applyFilter(query string, filter *sports.ListEventsRequestF
 		return query, args
 	}
 
-	if len(filter.MeetingIds) > 0 {
-		clauses = append(clauses, "meeting_id IN ("+strings.Repeat("?,", len(filter.MeetingIds)-1)+"?)")
+	if len(filter.Ids) > 0 {
+		clauses = append(clauses, "id IN ("+strings.Repeat("?,", len(filter.Ids)-1)+"?)")
 
-		for _, meetingID := range filter.MeetingIds {
-			args = append(args, meetingID)
+		for _, ids := range filter.Ids {
+			args = append(args, ids)
 		}
-	}
-
-	if filter.Visible != nil {
-		clauses = append(clauses, "visible = ?")
-		args = append(args, filter.Visible)
 	}
 
 	if len(clauses) != 0 {

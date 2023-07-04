@@ -19,15 +19,18 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Sports_ListEvents_FullMethodName = "/sports.Sports/ListEvents"
+	Sports_ListEvents_FullMethodName     = "/sports.Sports/ListEvents"
+	Sports_FetchEventById_FullMethodName = "/sports.Sports/FetchEventById"
 )
 
 // SportsClient is the client API for Sports service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SportsClient interface {
-	// ListEvents will return a collection of all events.
+	// / ListEvents returns a collection of all events.
 	ListEvents(ctx context.Context, in *ListEventsRequest, opts ...grpc.CallOption) (*ListEventsResponse, error)
+	// FetchEventById returns a event for the requested id.
+	FetchEventById(ctx context.Context, in *EventRequestById, opts ...grpc.CallOption) (*Event, error)
 }
 
 type sportsClient struct {
@@ -47,12 +50,23 @@ func (c *sportsClient) ListEvents(ctx context.Context, in *ListEventsRequest, op
 	return out, nil
 }
 
+func (c *sportsClient) FetchEventById(ctx context.Context, in *EventRequestById, opts ...grpc.CallOption) (*Event, error) {
+	out := new(Event)
+	err := c.cc.Invoke(ctx, Sports_FetchEventById_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SportsServer is the server API for Sports service.
 // All implementations should embed UnimplementedSportsServer
 // for forward compatibility
 type SportsServer interface {
-	// ListEvents will return a collection of all events.
+	// / ListEvents returns a collection of all events.
 	ListEvents(context.Context, *ListEventsRequest) (*ListEventsResponse, error)
+	// FetchEventById returns a event for the requested id.
+	FetchEventById(context.Context, *EventRequestById) (*Event, error)
 }
 
 // UnimplementedSportsServer should be embedded to have forward compatible implementations.
@@ -61,6 +75,9 @@ type UnimplementedSportsServer struct {
 
 func (UnimplementedSportsServer) ListEvents(context.Context, *ListEventsRequest) (*ListEventsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListEvents not implemented")
+}
+func (UnimplementedSportsServer) FetchEventById(context.Context, *EventRequestById) (*Event, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchEventById not implemented")
 }
 
 // UnsafeSportsServer may be embedded to opt out of forward compatibility for this service.
@@ -92,6 +109,24 @@ func _Sports_ListEvents_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Sports_FetchEventById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EventRequestById)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SportsServer).FetchEventById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Sports_FetchEventById_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SportsServer).FetchEventById(ctx, req.(*EventRequestById))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Sports_ServiceDesc is the grpc.ServiceDesc for Sports service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +137,10 @@ var Sports_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListEvents",
 			Handler:    _Sports_ListEvents_Handler,
+		},
+		{
+			MethodName: "FetchEventById",
+			Handler:    _Sports_FetchEventById_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

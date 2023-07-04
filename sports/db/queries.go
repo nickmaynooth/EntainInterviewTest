@@ -4,7 +4,7 @@ const (
 	eventsList = "list"
 )
 
-func getEventsQueries() map[string]string {
+func getEventQueries() map[string]string {
 	return map[string]string{
 		eventsList: `
 			SELECT 
@@ -12,7 +12,7 @@ func getEventsQueries() map[string]string {
 				name, 
 				number,  
 				advertised_start_time 
-			FROM sports
+			FROM events
 		`,
 	}
 }

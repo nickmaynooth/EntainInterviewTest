@@ -4,10 +4,18 @@ package sports;
 option go_package = "/sports";
 
 import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
 
 service Sports {
-  // ListEvents will return a collection of all events.
-  rpc ListEvents(ListEventsRequest) returns (ListEventsResponse) {}
+   // ListEvents returns a collection of all events.
+   rpc ListEvents(ListEventsRequest) returns (ListEventsResponse) {
+    option (google.api.http) = { post: "/v1/list-events", body: "*" };
+  }
+
+  // FetchEventById returns a event for the requested id.
+  rpc FetchEventById(EventRequestById) returns (Event) {
+    option (google.api.http) = { get: "/v1/fetch-event-by-id" };
+  }
 }
 
 /* Requests/Responses */
@@ -16,12 +24,16 @@ message ListEventsRequest {
   ListEventRequestFilter filter = 1;
 }
 
-// Response to ListRaces call.
-message ListEventsResponse {
-  repeated Event event = 1;
+message EventRequestById {
+    int64 id = 1;
 }
 
-// Filter for listing races.
+// Response to ListEvents call.
+message ListEventsResponse {
+  repeated Event events = 1;
+}
+
+// Filter for listing events.
 message ListEventRequestFilter {
   repeated int64 ids = 1;
 
